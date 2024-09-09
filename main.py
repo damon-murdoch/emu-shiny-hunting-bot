@@ -15,7 +15,7 @@ options = [
 if __name__ == '__main__':
 
     try:
-        print("Starting Citra shiny hunting bot ...")
+        print("Starting shiny hunting bot ...")
 
         # Citra window
         citra = None
