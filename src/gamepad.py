@@ -5,20 +5,30 @@ from vgamepad import XUSB_BUTTON as button
 # Joystick Coordinates
 JOYSTICK_COORDINATES = {
     "up": 1.0,
-    "down": -1.0, 
-    "left": -1.0, 
+    "down": -1.0,
+    "left": -1.0,
     "right": 1.0,
-    "neutral": 10
+    "neutral": 10,
 }
 
-def left_stick_and_release(gp, x, y, delay: int = 0.01):
-    
+# ~8s between resets
+RESET_DELAY = 8
+
+# Single Button Press
+SINGLE_PRESS = 0.1
+
+# Sequence Button Press
+SEQUENCE_PRESS = 0.5
+
+
+def left_stick_and_release(gp, x, y, delay: int = SINGLE_PRESS):
+
     # Input the left joystick
     gp.left_joystick_float(x_value_float=x, y_value_float=y)
     gp.update()
 
     # Wait for delay (if set)
-    if delay: 
+    if delay:
         time.sleep(delay)
 
     # Reset the left joystick
@@ -26,7 +36,7 @@ def left_stick_and_release(gp, x, y, delay: int = 0.01):
     gp.update()
 
 
-def press_and_release(gp, buttons, delay: int = 0.01):
+def press_and_release(gp, buttons, delay: int = SINGLE_PRESS):
 
     # Press button and update
     for button in buttons:
@@ -44,7 +54,10 @@ def press_and_release(gp, buttons, delay: int = 0.01):
 
 
 def press_and_release_sequence(
-    gp, sequence, delay_sequence: int = 0.05, delay_buttons: int = 0.01
+    gp,
+    sequence,
+    delay_sequence: int = SEQUENCE_PRESS,
+    delay_buttons: int = SINGLE_PRESS,
 ):
 
     # Loop over the sequence elements
@@ -53,6 +66,25 @@ def press_and_release_sequence(
         press_and_release(gp, buttons, delay_buttons)
         if delay_sequence:
             time.sleep(delay_sequence)
+
+
+def soft_reset(gp, delay: int = RESET_DELAY):
+
+    # Soft reset the game
+    press_and_release(
+        gp,
+        [
+            button.XUSB_GAMEPAD_START,
+            button.XUSB_GAMEPAD_BACK,
+            button.XUSB_GAMEPAD_LEFT_SHOULDER,
+            button.XUSB_GAMEPAD_RIGHT_SHOULDER,
+        ],
+        SINGLE_PRESS,
+    )
+
+    # Wait for delay (if set)
+    if delay:
+        time.sleep(delay)
 
 
 def get_gamepad():

@@ -41,6 +41,7 @@ def save_screenshot(window, name="screenshot.png", format="PNG"):
     # Save the screenshot
     image.save(filename, format)
 
+
 def wait_for_change(window, x=None, y=None, delay=0.1, limit=100):
 
     # X Coordinate not provided

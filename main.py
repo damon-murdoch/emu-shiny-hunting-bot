@@ -6,13 +6,13 @@ import src.screenshot as screenshot
 import src.bot as bot
 
 options = [
-    "Static Encounter Bot", 
+    "Static Encounter Bot",
     "Egg Hatcher (XY)",
     "Egg Hatcher (ORAS)",
     "Egg Hatcher (SM/USUM)",
 ]
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     try:
         print("Starting shiny hunting bot ...")
@@ -23,7 +23,7 @@ if __name__ == '__main__':
         windows = pgw.getAllWindows()
         for window in windows:
             title = window.title
-            if title.startswith('Citra'):
+            if title.startswith("Citra"):
                 citra = window
 
         # Citra window found
@@ -45,18 +45,18 @@ if __name__ == '__main__':
             try:
                 option = int(input("Please select an option: ")) - 1
             except Exception as e:
-                option = -1 # Bad input
+                option = -1  # Bad input
 
             # Within the range of options
             if option >= 0 and option < len(options):
-                if option == 0: # Configure Gamepad (Citra)
+                if option == 0:  # Configure Gamepad (Citra)
                     bot.static_encounter_bot(citra)
-                else: # Not Implemented
+                else:  # Not Implemented
                     print("TODO: Implement this")
-            else: # Outside of the range
+            else:  # Outside of the range
                 print("Goodbye!")
 
-        else: # No citra window
+        else:  # No citra window
             raise Exception("Citra window not found!")
 
     except Exception as e:

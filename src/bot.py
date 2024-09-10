@@ -7,33 +7,14 @@ from vgamepad import XUSB_BUTTON as button
 
 from src.gamepad import JOYSTICK_COORDINATES as joystick
 
-# ~8s between resets
-RESET_DELAY = 12
-
 # ~4s input delay
-INPUT_DELAY = 6
+INPUT_DELAY = 4
 
 # ~1.1s delay for shinies
 SHINY_DELAY = 1.1
 
 # Encounters Text FIle
 ENCOUNTERS_FILE = "encounters.txt"
-
-def soft_reset(gp):
-
-    # Soft reset the game
-    gamepad.press_and_release(
-        gp,
-        [
-            button.XUSB_GAMEPAD_START,
-            button.XUSB_GAMEPAD_BACK,
-            button.XUSB_GAMEPAD_LEFT_SHOULDER,
-            button.XUSB_GAMEPAD_RIGHT_SHOULDER,
-        ],
-        0.05,
-    )
-
-    time.sleep(RESET_DELAY)
 
 
 def static_encounter_bot(window):
@@ -95,13 +76,16 @@ def static_encounter_bot(window):
     # Start loop
     while True:
 
+        # Encounter start time
+        start = datetime.now()
+
         try:
 
             # Increment counter
             encounters += 1
 
             # Reset game
-            soft_reset(gp)
+            gamepad.soft_reset(gp)
 
             # Perform input loop
             seconds = input_loop(gp)
@@ -115,6 +99,10 @@ def static_encounter_bot(window):
                 fastest = seconds
 
                 input("Press enter to continue, or ctrl + c to quit:")
+
+            # Current seconds faster than fastest time WITH shiny delay
+            elif seconds + SHINY_DELAY < fastest:
+                raise Exception("Encounter was too quick!")
 
             # Update fastest time
             elif fastest > seconds:
@@ -137,8 +125,6 @@ def static_encounter_bot(window):
                 ):
                     return encounters
 
-            print(f"Total encounters: {encounters} ...")
-
         except Exception as e:  # Failure
 
             print(f"Encounter failed: {e}, resetting ...")
@@ -148,4 +134,13 @@ def static_encounter_bot(window):
             with open(ENCOUNTERS_FILE, "w") as file:
                 file.write(str(encounters))
         except Exception as e:  # Failure
-            print(f"Encounters file failed: {e}, resetting ...")
+            print(f"Failed to update encounters: {e}")
+
+        # Encounter end time
+        end = datetime.now()
+
+        # Get total duration, seconds
+        total_duration = end - start
+        total_seconds = total_duration.total_seconds()
+
+        print(f"Encounter {encounters} completed in {total_seconds}s.")
