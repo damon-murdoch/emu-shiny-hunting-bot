@@ -69,6 +69,11 @@ If you have any suggestions or encounter issues, feel free to open an issue [her
 - Initial release with Static Encounter Bot functionality for emulators.
 - Basic error handling to detect stuck situations and reset the game.
 
+### Ver. 0.0.2
+
+- Added file logging (events.log)
+- Random delay after each reset (to negate any potential seeding issues)
+
 ## Sponsor this Project
 
 If you'd like to support this project and future updates, consider donating through PayPal:  

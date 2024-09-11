@@ -1,3 +1,4 @@
 out
 encounters.txt
 *__pycache__
+*.log

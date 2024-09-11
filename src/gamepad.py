@@ -12,7 +12,7 @@ JOYSTICK_COORDINATES = {
 }
 
 # ~8s between resets
-RESET_DELAY = 8
+RESET_DELAY = 6
 
 # Single Button Press
 SINGLE_PRESS = 0.1
@@ -68,7 +68,7 @@ def press_and_release_sequence(
             time.sleep(delay_sequence)
 
 
-def soft_reset(gp, delay: int = RESET_DELAY):
+def soft_reset(gp, delay: int = RESET_DELAY, offset: int = 0):
 
     # Soft reset the game
     press_and_release(
@@ -82,9 +82,12 @@ def soft_reset(gp, delay: int = RESET_DELAY):
         SINGLE_PRESS,
     )
 
+    # Generate the reset delay
+    reset_delay = delay + offset
+
     # Wait for delay (if set)
-    if delay:
-        time.sleep(delay)
+    if reset_delay:
+        time.sleep(reset_delay)
 
 
 def get_gamepad():
