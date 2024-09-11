@@ -1,4 +1,4 @@
-import os, time
+import math, os, time, random
 from datetime import datetime
 
 import src.screenshot as screenshot
@@ -6,6 +6,7 @@ import src.gamepad as gamepad
 from vgamepad import XUSB_BUTTON as button
 
 from src.gamepad import JOYSTICK_COORDINATES as joystick
+from src.log import write_log, LOG_FILE
 
 # ~4s input delay
 INPUT_DELAY = 4
@@ -53,10 +54,18 @@ def static_encounter_bot(window):
 
         # Return seconds
         return duration.total_seconds()
+    
+    # Bot Version
+    # Updated each revision
+    version = "0.0.2"
 
     # Reset times
     fastest = None
     encounters = 0
+
+    # Create the log file (or clear it)
+    with open(LOG_FILE, "w") as file:
+        write_log(f"Starting static encounter bot v{version} ...")
 
     # Create the encounters file, if empty
     if not os.path.exists(ENCOUNTERS_FILE):
@@ -67,7 +76,7 @@ def static_encounter_bot(window):
     with open(ENCOUNTERS_FILE, "r") as file:
         encounters = int(file.read())
 
-    print(f"Current encounters: {encounters} ...")
+    write_log(f"Current encounters: {encounters} ...")
 
     # Create & configure virtual gamepad
     gp = gamepad.get_gamepad()
@@ -84,8 +93,13 @@ def static_encounter_bot(window):
             # Increment counter
             encounters += 1
 
-            # Reset game
-            gamepad.soft_reset(gp)
+            # Random ~0-4s delay
+            offset = random.uniform(0.0, 4.0)
+
+            write_log(f"Random reset delay added: {round(offset, 2)}s.")
+
+            # Reset game (With random delay)
+            gamepad.soft_reset(gp, offset=offset)
 
             # Perform input loop
             seconds = input_loop(gp)
@@ -93,7 +107,7 @@ def static_encounter_bot(window):
             # First encounter
             if fastest == None:
 
-                print(f"First encounter took {seconds}s.")
+                write_log(f"First encounter took {seconds}s.")
 
                 # Add to duration, resets
                 fastest = seconds
@@ -107,7 +121,7 @@ def static_encounter_bot(window):
             # Update fastest time
             elif fastest > seconds:
 
-                print(f"Fastest encounter updated: {seconds}s.")
+                write_log(f"Fastest encounter updated: {seconds}s.")
 
                 fastest = seconds
 
@@ -127,14 +141,14 @@ def static_encounter_bot(window):
 
         except Exception as e:  # Failure
 
-            print(f"Encounter failed: {e}, resetting ...")
+            write_log(f"Encounter failed: {e}, resetting ...")
 
         try:
             # Parse the number of encounters from the file
             with open(ENCOUNTERS_FILE, "w") as file:
                 file.write(str(encounters))
         except Exception as e:  # Failure
-            print(f"Failed to update encounters: {e}")
+            write_log(f"Failed to update encounters: {e}")
 
         # Encounter end time
         end = datetime.now()
@@ -143,4 +157,4 @@ def static_encounter_bot(window):
         total_duration = end - start
         total_seconds = total_duration.total_seconds()
 
-        print(f"Encounter {encounters} completed in {total_seconds}s.")
+        write_log(f"Encounter {encounters} completed in {total_seconds}s.")
