@@ -57,7 +57,7 @@ def static_encounter_bot(window):
     
     # Bot Version
     # Updated each revision
-    version = "0.0.2"
+    version = "0.1.0"
 
     # Reset times
     fastest = None
@@ -89,58 +89,42 @@ def static_encounter_bot(window):
         start = datetime.now()
 
         try:
-
             # Increment counter
             encounters += 1
 
+            write_log(f"Starting encounter {encounters} ...")
+
             # Random ~0-4s delay
             offset = random.uniform(0.0, 4.0)
-
-            write_log(f"Random reset delay added: {round(offset, 2)}s.")
 
             # Reset game (With random delay)
             gamepad.soft_reset(gp, offset=offset)
 
             # Perform input loop
             seconds = input_loop(gp)
-
+            
+            write_log(f"Battle menu loaded in {seconds}s.")
+            
             # First encounter
             if fastest == None:
-
-                write_log(f"First encounter took {seconds}s.")
-
-                # Add to duration, resets
+                input("First encounter: press enter to continue")
                 fastest = seconds
-
-                input("Press enter to continue, or ctrl + c to quit:")
-
-            # Current seconds faster than fastest time WITH shiny delay
-            elif seconds + SHINY_DELAY < fastest:
-                raise Exception("Encounter was too quick!")
 
             # Update fastest time
             elif fastest > seconds:
-
-                write_log(f"Fastest encounter updated: {seconds}s.")
-
+                write_log(f"Fastest load time updated.")
                 fastest = seconds
 
-            # Current seconds exceeds the shiny delay
+            # Encounter is too quick (error)
+            elif seconds + SHINY_DELAY < fastest:
+                raise Exception("Load time was too quick!")
+
+            # Potential shiny detected
             elif seconds > fastest + SHINY_DELAY:
-
-                print("Warning: Potential shiny detected!")
-
-                # Keep going if the user types 'RESET', otherwise return the number of encounters
-                if (
-                    input(
-                        "Type 'RESET' to continue (false positive), or press enter to exit: "
-                    )
-                    != "RESET"
-                ):
-                    return encounters
+                write_log(f"Potential shiny detected after {encounters} encounters.")
+                return encounters
 
         except Exception as e:  # Failure
-
             write_log(f"Encounter failed: {e}, resetting ...")
 
         try:
@@ -157,4 +141,4 @@ def static_encounter_bot(window):
         total_duration = end - start
         total_seconds = total_duration.total_seconds()
 
-        write_log(f"Encounter {encounters} completed in {total_seconds}s.")
+        write_log(f"Resetting encounter {encounters} after {total_seconds}s.")

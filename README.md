@@ -64,15 +64,19 @@ If you have any suggestions or encounter issues, feel free to open an issue [her
 
 ## Changelog
 
-### Ver. 0.0.1
+### Ver. 0.1.0
 
-- Initial release with Static Encounter Bot functionality for emulators.
-- Basic error handling to detect stuck situations and reset the game.
+- Confirmed static encounter bot works through testing, improved logging
 
 ### Ver. 0.0.2
 
 - Added file logging (events.log)
 - Random delay after each reset (to negate any potential seeding issues)
+
+### Ver. 0.0.1
+
+- Initial release with Static Encounter Bot functionality for emulators.
+- Basic error handling to detect stuck situations and reset the game.
 
 ## Sponsor this Project
 
