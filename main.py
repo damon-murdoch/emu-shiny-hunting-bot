@@ -1,15 +1,17 @@
 import pygetwindow as pgw
 
 import src.screenshot as screenshot
+import src.gamepad as gamepad
 
 # Bots
 import src.bot as bot
 
 options = [
+    "Setup Gamepad", 
     "Static Encounter Bot",
-    "Egg Hatcher (XY)",
-    "Egg Hatcher (ORAS)",
     "Egg Hatcher (SM/USUM)",
+    "Egg Hatcher (ORAS)",
+    "Egg Hatcher (XY)",
 ]
 
 if __name__ == "__main__":
@@ -49,8 +51,12 @@ if __name__ == "__main__":
 
             # Within the range of options
             if option >= 0 and option < len(options):
-                if option == 0:  # Configure Gamepad (Citra)
+                if option == 0: # Configure Gamepad (Citra)
+                    gamepad.configure_citra()
+                if option == 1:  # Static Encounter Bot (USUM)
                     bot.static_encounter_bot(citra)
+                if option == 2: # Breeding Bot (USUM)
+                    bot.usum_breeding_bot(citra)
                 else:  # Not Implemented
                     print("TODO: Implement this")
             else:  # Outside of the range

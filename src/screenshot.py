@@ -80,6 +80,29 @@ def wait_for_change(window, x=None, y=None, delay=0.1, limit=100):
     # Colour changed
     return i
 
+def check_for_colour(window, x=None, y=None, r=0, g=0, b=0):
+
+    # X Coordinate not provided
+    if x == None:
+        # Center Pixel
+        x = math.floor(window.width / 2)
+
+    # Y Coordinate not provided
+    if y == None:
+        # Center Pixel (Bottom Screen)
+        y = math.floor((window.height * 2) / 3)
+
+    # Pixel tuple
+    point = (x, y)
+
+    # Target colour
+    target = (r, g, b)
+
+    screenshot = take_screenshot(window)
+    pixel = screenshot.getpixel(point)
+
+    # True/False if matches
+    return pixel == target
 
 def wait_for_colour(window, x=None, y=None, r=0, g=0, b=0, delay=0.1, limit=100):
 

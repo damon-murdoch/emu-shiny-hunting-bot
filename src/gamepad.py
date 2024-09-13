@@ -11,6 +11,12 @@ JOYSTICK_COORDINATES = {
     "neutral": 10,
 }
 
+# ~2s between inputs
+SAVE_DELAY = 2
+
+# ~4s input delay
+INPUT_DELAY = 4
+
 # ~8s between resets
 RESET_DELAY = 6
 
@@ -67,6 +73,19 @@ def press_and_release_sequence(
         if delay_sequence:
             time.sleep(delay_sequence)
 
+def save_game(gp, delay: int = SAVE_DELAY):
+
+    press_and_release_sequence(
+        gp, 
+        [
+            [button.XUSB_GAMEPAD_Y], # Open Menu
+            [button.XUSB_GAMEPAD_X], # Save Menu
+            [button.XUSB_GAMEPAD_B], # Confirm
+            [button.XUSB_GAMEPAD_B], # Confirm
+            [button.XUSB_GAMEPAD_A], # Exit
+        ], 
+        delay
+    )
 
 def soft_reset(gp, delay: int = RESET_DELAY, offset: int = 0):
 
@@ -89,6 +108,17 @@ def soft_reset(gp, delay: int = RESET_DELAY, offset: int = 0):
     if reset_delay:
         time.sleep(reset_delay)
 
+    # Note: Controller 'B' press maps to 'A' ingame
+
+    press_and_release_sequence(
+        gp,
+        [
+            [button.XUSB_GAMEPAD_B],  # Intro Cutscene
+            [button.XUSB_GAMEPAD_B],  # Load Save
+            [button.XUSB_GAMEPAD_B],  # Start encounter (Normal method)
+        ],
+        INPUT_DELAY,
+    )
 
 def get_gamepad():
 
