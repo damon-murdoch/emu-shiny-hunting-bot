@@ -1,6 +1,5 @@
 import math
 import time
-import pygetwindow as pgw
 from PIL import ImageGrab
 
 import os

@@ -21,7 +21,7 @@ ENCOUNTERS_FILE = "encounters.txt"
 HATCHED_FILE = "hatched.txt"
 
 
-def static_encounter_bot(window):
+def static_encounter_bot(window, game=None):
 
     def input_loop(gp):
 
@@ -56,7 +56,7 @@ def static_encounter_bot(window):
 
     # Create the log file (or clear it)
     with open(LOG_FILE, "w") as file:
-        write_log(f"Starting static encounter bot v{version} ...")
+        write_log(f"Starting Static Encounter Bot v{version} ...")
 
     # Create the encounters file, if empty
     if not os.path.exists(ENCOUNTERS_FILE):
@@ -134,6 +134,7 @@ def static_encounter_bot(window):
         write_log(f"Resetting encounter {encounters} after {total_seconds}s.")
 
 
+"""
 def usum_breeding_bot(window):
 
     # Start at Day Care Entrance
@@ -398,3 +399,4 @@ def usum_breeding_bot(window):
 
     # Return eggs hatched
     return hatched
+"""
