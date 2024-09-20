@@ -385,10 +385,7 @@ def usum_breeding_bot(window):
 
         except Exception as e:
             write_log(f"Egg hatching failed: {e}")
-                        
-            # Restart the game
-            gamepad.soft_reset(gp)
-
+            return hatched
         try:
             # Update hatch counter
             with open(HATCHED_FILE, "w") as file:
@@ -398,3 +395,6 @@ def usum_breeding_bot(window):
 
         # Wait 2 seconds
         time.sleep(2)
+
+    # Return eggs hatched
+    return hatched
