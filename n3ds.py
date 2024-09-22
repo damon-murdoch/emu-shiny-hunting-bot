@@ -1,11 +1,11 @@
-import pygetwindow as pgw
 import argparse
 
 import src.screenshot as screenshot
 import src.gamepad as gamepad
+import src.window as window
 import src.bot as bot
 
-TITLE="3DS Emulator Shiny Hunting Bot"
+TITLE = "3DS Emulator Shiny Hunting Bot"
 
 GAMES = [
     "usum",
@@ -16,14 +16,13 @@ GAMES = [
 OPTIONS = {
     "setup": gamepad.configure_citra,
     "static": bot.static_encounter_bot,
+    "release": bot.quick_release_bot,
 }
 
-parser = argparse.ArgumentParser(
-    "n3ds.py", description=TITLE
-)
-parser.add_argument("-g", "--game", choices=GAMES, default=GAMES[0])
+parser = argparse.ArgumentParser("n3ds.py", description=TITLE)
 parser.add_argument("action", choices=list(OPTIONS.keys()))
-parser.add_argument("-w", "--window", default="Citra")
+parser.add_argument("-g", "--game", choices=GAMES, default=GAMES[0])
+parser.add_argument("-a", "--autostart", default=None)
 
 if __name__ == "__main__":
 
@@ -36,11 +35,13 @@ if __name__ == "__main__":
 
         print(f"Starting {TITLE} ...")
 
-        windows = pgw.getAllWindows()
-        for window in windows:
-            title = window.title
-            if title.startswith(arguments.window):
-                citra = window
+        # Find the citra window
+        citra = window.find_window()
+
+        # No window found, and autostart is setup
+        if citra == None and arguments.autostart:
+            # Start the process using the autostart script
+            citra = window.start_window(arguments.autostart)
 
         # Citra window found
         if citra:
@@ -51,7 +52,12 @@ if __name__ == "__main__":
             print("Please confirm the screenshot dimensions are accurate.")
 
             # Run the function for the selected option
-            option_script = OPTIONS[arguments.action](citra, game=arguments.game)
+            option_script = OPTIONS[arguments.action](
+                # Include auto-start script (Not available for all macros)
+                citra,
+                game=arguments.game,
+                autostart=arguments.autostart,
+            )
 
         else:  # No window
             raise Exception("Window not found!")

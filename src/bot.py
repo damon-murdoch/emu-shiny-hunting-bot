@@ -3,6 +3,8 @@ from datetime import datetime
 
 import src.screenshot as screenshot
 import src.gamepad as gamepad
+import src.window as window
+
 from vgamepad import XUSB_BUTTON as button
 
 from src.gamepad import JOYSTICK_COORDINATES as joystick
@@ -21,7 +23,68 @@ ENCOUNTERS_FILE = "encounters.txt"
 HATCHED_FILE = "hatched.txt"
 
 
-def static_encounter_bot(window, game=None):
+def quick_release_bot(window, game=None, autostart=None):
+
+    def release_mon(gp):
+        # Open menu, release pokemon, close menu
+        gamepad.press_and_release_sequence(
+            gp,
+            [
+                [button.XUSB_GAMEPAD_B],
+                [button.XUSB_GAMEPAD_DPAD_UP],
+                [button.XUSB_GAMEPAD_DPAD_UP],
+                [button.XUSB_GAMEPAD_B],
+                [button.XUSB_GAMEPAD_DPAD_UP],
+                [button.XUSB_GAMEPAD_B],
+                [button.XUSB_GAMEPAD_B],
+                [button.XUSB_GAMEPAD_B],
+            ],
+            1,
+        )
+
+    # Bot Version
+    version = "0.0.1"
+
+    # Create the log file (or clear it)
+    with open(LOG_FILE, "w") as file:
+        write_log(f"Starting Quick Release Bot v{version} ...")
+
+    # Create & configure virtual gamepad
+    gp = gamepad.get_gamepad()
+
+    print("Please ensure boxes are full from the top-left to top-right first.")
+    count = int(input("Enter the number of Pokemon to release:"))
+
+    # Move controller right
+    move_right = False
+
+    # Release 'count' pokemon:
+    for index in range(count):
+
+        print(f"Releasing pokemon {index + 1} ...")
+
+        # Moving to new box
+        if index % 30 == 0:
+            pass
+
+        # Moving to new row
+        if index % 6 == 0:
+            gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_DOWN])
+            # Toggle move left/right
+            move_right = not move_right
+
+        # Release Pokemon
+        release_mon(gp)
+
+        if move_right:
+            gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_RIGHT])
+        else:
+            gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_LEFT])
+
+    time.sleep(1)
+
+
+def static_encounter_bot(citra, game=None, autostart=None):
 
     def input_loop(gp):
 
@@ -29,16 +92,16 @@ def static_encounter_bot(window, game=None):
         gamepad.left_stick_and_release(gp, joystick["neutral"], joystick["up"], 1)
 
         # Wait for fade to black / dark blue
-        screenshot.wait_for_colour(window)
-        screenshot.wait_for_change(window)
+        screenshot.wait_for_colour(citra)
+        screenshot.wait_for_change(citra)
 
         # Time until battle menu
         start = datetime.now()
-        screenshot.wait_for_change(window)
+        screenshot.wait_for_change(citra)
         end = datetime.now()
 
         # Save screenshot of the last encounter
-        screenshot.save_screenshot(window, "lastencounter.png")
+        screenshot.save_screenshot(citra, "lastencounter.png")
 
         # Seconds to load battle menu
         duration = end - start
@@ -114,7 +177,24 @@ def static_encounter_bot(window, game=None):
                 return encounters
 
         except Exception as e:  # Failure
-            write_log(f"Encounter failed: {e}, resetting ...")
+
+            # Error msg string
+            errmsg = str(e)
+
+            # Window has crashed
+            if errmsg.startswith("Error code from Windows: 1400 - Invalid window handle."):
+
+                # Error Message
+                message = "Encounter failed: Window has crashed."
+
+                # Autostart Enabled
+                if autostart:
+                    write_log(f"{message} Restarting ...")
+                    citra = window.start_window(autostart)
+                else:  # Cannot Restart
+                    raise Exception(message)
+            else:  # Generic error
+                write_log(f"Encounter failed: {e} Resetting ...")
 
         try:
             # Parse the number of encounters from the file
