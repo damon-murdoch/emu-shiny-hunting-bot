@@ -43,7 +43,7 @@ def quick_release_bot(window, game=None, autostart=None):
         )
 
     # Bot Version
-    version = "0.0.1"
+    version = "1.0.0"
 
     # Create the log file (or clear it)
     with open(LOG_FILE, "w") as file:
@@ -52,34 +52,62 @@ def quick_release_bot(window, game=None, autostart=None):
     # Create & configure virtual gamepad
     gp = gamepad.get_gamepad()
 
+    print("Start this script from the top-left most position in the leftmost box.")
     print("Please ensure boxes are full from the top-left to top-right first.")
-    count = int(input("Enter the number of Pokemon to release:"))
+
+    count = 1
+    try:
+        count = int(input("Enter the number of Pokemon to release: "))
+        print(f"{count} pokemon will be released.")
+    except Exception as e:
+        print(f"Releasing selected Pokemon only.")
 
     # Move controller right
-    move_right = False
+    move_right = True
 
     # Release 'count' pokemon:
     for index in range(count):
 
+        # Box slot number
+        slot = index + 1
+
         print(f"Releasing pokemon {index + 1} ...")
-
-        # Moving to new box
-        if index % 30 == 0:
-            pass
-
-        # Moving to new row
-        if index % 6 == 0:
-            gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_DOWN])
-            # Toggle move left/right
-            move_right = not move_right
 
         # Release Pokemon
         release_mon(gp)
 
-        if move_right:
-            gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_RIGHT])
-        else:
-            gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_LEFT])
+        # Moving to new box
+        if slot % 30 == 0:
+            gamepad.press_and_release_sequence(
+                gp,
+                [
+                    # Switch page
+                    [button.XUSB_GAMEPAD_RIGHT_SHOULDER],
+                    # Reset to left
+                    [button.XUSB_GAMEPAD_DPAD_RIGHT],
+                    [button.XUSB_GAMEPAD_DPAD_RIGHT],
+                    [button.XUSB_GAMEPAD_DPAD_RIGHT],
+                    # Reset to top
+                    [button.XUSB_GAMEPAD_DPAD_DOWN],
+                    [button.XUSB_GAMEPAD_DPAD_DOWN],
+                    [button.XUSB_GAMEPAD_DPAD_DOWN],
+                ],
+            )
+
+        # Moving to new row
+        elif slot % 6 == 0:
+            gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_DOWN])
+            # Toggle move left/right
+            move_right = not move_right
+            # Wait 1 second
+            time.sleep(1)
+
+        # Not last release
+        elif slot != count:
+            if move_right:
+                gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_RIGHT])
+            else:
+                gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_LEFT])
 
     time.sleep(1)
 
@@ -182,7 +210,9 @@ def static_encounter_bot(citra, game=None, autostart=None):
             errmsg = str(e)
 
             # Window has crashed
-            if errmsg.startswith("Error code from Windows: 1400 - Invalid window handle."):
+            if errmsg.startswith(
+                "Error code from Windows: 1400 - Invalid window handle."
+            ):
 
                 # Error Message
                 message = "Encounter failed: Window has crashed."

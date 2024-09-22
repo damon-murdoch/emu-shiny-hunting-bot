@@ -1,3 +1,4 @@
 pygetwindow
 vgamepad
 pillow
+black

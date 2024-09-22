@@ -4,10 +4,11 @@ import time
 from subprocess import Popen as subprocess
 
 # Window Title
-WINDOW_TITLE = 'Citra'
+WINDOW_TITLE = "Citra"
 
 # Startup Wait Time
 STARTUP_DELAY = 5
+
 
 def find_window():
     windows = pgw.getAllWindows()
@@ -16,6 +17,7 @@ def find_window():
         if title.startswith(WINDOW_TITLE):
             return window
     return None
+
 
 def start_window(script, delay=STARTUP_DELAY):
 

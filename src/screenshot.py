@@ -79,6 +79,7 @@ def wait_for_change(window, x=None, y=None, delay=0.1, limit=100):
     # Colour changed
     return i
 
+
 def check_for_colour(window, x=None, y=None, r=0, g=0, b=0):
 
     # X Coordinate not provided
@@ -102,6 +103,7 @@ def check_for_colour(window, x=None, y=None, r=0, g=0, b=0):
 
     # True/False if matches
     return pixel == target
+
 
 def wait_for_colour(window, x=None, y=None, r=0, g=0, b=0, delay=0.1, limit=100):
 

@@ -73,19 +73,21 @@ def press_and_release_sequence(
         if delay_sequence:
             time.sleep(delay_sequence)
 
+
 def save_game(gp, delay: int = SAVE_DELAY):
 
     press_and_release_sequence(
-        gp, 
+        gp,
         [
-            [button.XUSB_GAMEPAD_Y], # Open Menu
-            [button.XUSB_GAMEPAD_X], # Save Menu
-            [button.XUSB_GAMEPAD_B], # Confirm
-            [button.XUSB_GAMEPAD_B], # Confirm
-            [button.XUSB_GAMEPAD_A], # Exit
-        ], 
-        delay
+            [button.XUSB_GAMEPAD_Y],  # Open Menu
+            [button.XUSB_GAMEPAD_X],  # Save Menu
+            [button.XUSB_GAMEPAD_B],  # Confirm
+            [button.XUSB_GAMEPAD_B],  # Confirm
+            [button.XUSB_GAMEPAD_A],  # Exit
+        ],
+        delay,
     )
+
 
 def soft_reset(gp, delay: int = RESET_DELAY, offset: int = 0):
 
@@ -119,6 +121,7 @@ def soft_reset(gp, delay: int = RESET_DELAY, offset: int = 0):
         ],
         INPUT_DELAY,
     )
+
 
 def get_gamepad():
 
