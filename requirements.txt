@@ -1,4 +1,11 @@
+# Optional
+opencv-python 
+opencv-python-headless
+
+# Required
+scikit-image
 pygetwindow
 vgamepad
 pillow
+numpy
 black

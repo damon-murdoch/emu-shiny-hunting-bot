@@ -3,6 +3,7 @@ import argparse
 import src.screenshot as screenshot
 import src.gamepad as gamepad
 import src.window as window
+import src.macro as macro
 import src.bot as bot
 
 TITLE = "3DS Emulator Shiny Hunting Bot"
@@ -14,9 +15,14 @@ GAMES = [
 ]
 
 OPTIONS = {
+    # Setup
     "setup": gamepad.configure_citra,
-    "static": bot.static_encounter_bot,
-    "release": bot.quick_release_bot,
+    # Macros
+    "premier-ball": macro.premier_ball,
+    "quick-release": macro.quick_release,
+    # Bots
+    "soft-reset-bot": bot.soft_reset_bot,
+    "egg-hatching-bot": bot.egg_hatching_bot,
 }
 
 parser = argparse.ArgumentParser("n3ds.py", description=TITLE)

@@ -3,3 +3,4 @@ encounters.txt
 *__pycache__
 *.log
 hatched.txt
+temp.py

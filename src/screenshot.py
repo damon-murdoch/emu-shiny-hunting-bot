@@ -1,6 +1,8 @@
 import math
 import time
-from PIL import ImageGrab
+import numpy as np
+from PIL import Image, ImageGrab
+from skimage.metrics import structural_similarity as ssim
 
 import os
 
@@ -9,6 +11,61 @@ OUTDIR = "out"
 
 # Wait Limit
 LIMIT = 100
+
+
+def crop_image(image, crop_w=0.8, crop_h=0.8):
+
+    # Parse image width/height
+    width, height = image.size
+
+    # Calculate cropping margins
+    crop_margin_w = (1 - crop_w) / 2 * width
+    crop_margin_h = (1 - crop_h) / 2 * height
+
+    # Crop the image to the center portion
+    left = crop_margin_w
+    top = crop_margin_h
+    right = width - crop_margin_w
+    bottom = height - crop_margin_h
+
+    # Return the cropped image
+    return image.crop((left, top, right, bottom))
+
+
+def load_image_data(image_path, debug=False):
+
+    # Load image from path
+    image = Image.open(image_path)
+
+    # Crop the image to scale
+    image = crop_image(image, 0.8, 0.5)
+
+    # Convert image to grayscale
+    image = image.convert("L")
+
+    # [Debug]
+    if debug:
+        # Save a copy of the cropped greyscale image for testing
+        image.save(f"{image_path.replace('.png', '.copy.png')}")
+
+    # Return as np array
+    return np.array(image)
+
+
+def compare_images(a, b, debug=False):
+
+    # Generate full paths
+    pa = os.path.join(OUTDIR,a)
+    pb = os.path.join(OUTDIR,b)
+
+    # Load both images
+    fa = load_image_data(pa, debug=debug)
+    fb = load_image_data(pb, debug=debug)
+
+    # Compare the two images
+    similarity, _ = ssim(fa, fb, full=True)
+
+    return similarity
 
 
 def take_screenshot(window):
