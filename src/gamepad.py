@@ -2,13 +2,28 @@ import time
 import vgamepad as vg
 from vgamepad import XUSB_BUTTON as button
 
+ABXY_MAP = {
+    "emulator": {
+        "a": button.XUSB_GAMEPAD_B,
+        "b": button.XUSB_GAMEPAD_A,
+        "x": button.XUSB_GAMEPAD_Y,
+        "y": button.XUSB_GAMEPAD_X,
+    },
+    "remote": {
+        "a": button.XUSB_GAMEPAD_A,
+        "b": button.XUSB_GAMEPAD_B,
+        "x": button.XUSB_GAMEPAD_X,
+        "y": button.XUSB_GAMEPAD_Y,
+    },
+}
+
 # Joystick Coordinates
 JOYSTICK_COORDINATES = {
     "up": 1.0,
     "down": -1.0,
     "left": -1.0,
     "right": 1.0,
-    "neutral": 10,
+    "neutral": 0,
 }
 
 # ~2s between inputs
@@ -74,22 +89,24 @@ def press_and_release_sequence(
             time.sleep(delay_sequence)
 
 
-def save_game(gp, delay: int = SAVE_DELAY):
+"""
+def save_game(gp, method, delay: int = SAVE_DELAY):
 
     press_and_release_sequence(
         gp,
         [
-            [button.XUSB_GAMEPAD_Y],  # Open Menu
-            [button.XUSB_GAMEPAD_X],  # Save Menu
-            [button.XUSB_GAMEPAD_B],  # Confirm
-            [button.XUSB_GAMEPAD_B],  # Confirm
-            [button.XUSB_GAMEPAD_A],  # Exit
+            [ABXY_MAP[method]["x"]],  # Open Menu
+            [ABXY_MAP[method]["y"]],  # Save Menu
+            [ABXY_MAP[method]["a"]],  # Confirm
+            [ABXY_MAP[method]["a"]],  # Confirm
+            [ABXY_MAP[method]["b"]],  # Exit
         ],
         delay,
     )
+"""
 
 
-def soft_reset(gp, delay: int = RESET_DELAY, offset: int = 0):
+def soft_reset(gp, method, delay: int = RESET_DELAY, offset: int = 0):
 
     # Soft reset the game
     press_and_release(
@@ -115,9 +132,10 @@ def soft_reset(gp, delay: int = RESET_DELAY, offset: int = 0):
     press_and_release_sequence(
         gp,
         [
-            [button.XUSB_GAMEPAD_B],  # Intro Cutscene
-            [button.XUSB_GAMEPAD_B],  # Load Save
-            [button.XUSB_GAMEPAD_B],  # Start encounter (Normal method)
+            [ABXY_MAP[method]["a"]],  # Intro Cutscene
+            [ABXY_MAP[method]["a"]],  # Load Save
+            [ABXY_MAP[method]["a"]],  # Sanity Check
+            [ABXY_MAP[method]["a"]],  # Sanity Check
         ],
         INPUT_DELAY,
     )

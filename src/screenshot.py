@@ -55,8 +55,8 @@ def load_image_data(image_path, debug=False):
 def compare_images(a, b, debug=False):
 
     # Generate full paths
-    pa = os.path.join(OUTDIR,a)
-    pb = os.path.join(OUTDIR,b)
+    pa = os.path.join(OUTDIR, a)
+    pb = os.path.join(OUTDIR, b)
 
     # Load both images
     fa = load_image_data(pa, debug=debug)
