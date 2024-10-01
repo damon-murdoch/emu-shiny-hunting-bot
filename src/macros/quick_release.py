@@ -25,7 +25,6 @@ def release_mon(gp, method):
 
 
 def main(game, method):
-
     # Create the log file (or clear it)
     with open(LOG_FILE, "w"):
         write_log(f"Starting Quick Release Bot ...")
@@ -48,7 +47,6 @@ def main(game, method):
 
     # Release 'count' pokemon:
     for index in range(count):
-
         # Box slot number
         slot = index + 1
 

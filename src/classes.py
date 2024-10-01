@@ -2,7 +2,6 @@
 # For simple macros
 class Macro:
     def __init__(self, action):
-
         # Function to execute
         self.action = action
 

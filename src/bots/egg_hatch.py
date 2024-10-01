@@ -11,6 +11,7 @@ from src.gamepad import JOYSTICK_COORDINATES as joystick
 from src.gamepad import ABXY_MAP as abxy
 from src.log import write_log, LOG_FILE
 
+from src.common import handle_exception
 
 # Eggs Hatched Text File
 HATCHED_FILE = "hatched.txt"
@@ -36,7 +37,6 @@ def sprint_and_spin(gp, method):
 
 
 def usum_loop(gp, process, method, control=False, max_spins=20):
-
     # Similarity to control
     similarity = 1.0  # 100%
 
@@ -66,7 +66,6 @@ def usum_loop(gp, process, method, control=False, max_spins=20):
 
     # Wait for black colour
     while spin_counter < max_spins and screenshot.check_for_colour(process) == False:
-
         # Spin twice
         for i in range(2):
             sprint_and_spin(gp)
@@ -79,7 +78,6 @@ def usum_loop(gp, process, method, control=False, max_spins=20):
 
     # Egg hatched (egg menu)
     if spin_counter < max_spins:
-
         # Wait to reach nickname menu
         screenshot.wait_for_change(process)
 
@@ -109,7 +107,6 @@ def usum_loop(gp, process, method, control=False, max_spins=20):
 
 
 def oras_loop(gp, process, method, control=False, max_loops=16):
-
     # Similarity to control
     similarity = 1.0  # 100%
 
@@ -159,7 +156,6 @@ def oras_loop(gp, process, method, control=False, max_loops=16):
     loop_counter = 0
 
     while loop_counter < max_loops and screenshot.check_for_colour(process) == False:
-
         write_log(f"Starting loop '{loop_counter + 1}' ...")
 
         # Move Up (Hold for ~30s)
@@ -209,7 +205,6 @@ def oras_loop(gp, process, method, control=False, max_loops=16):
 
 
 def main(process, game=None, method=None, autostart=None):
-
     # Loops
     loops = {"usum": usum_loop, "oras": oras_loop}
 
@@ -246,7 +241,6 @@ def main(process, game=None, method=None, autostart=None):
 
     # Start loop
     while True:
-
         # Hatch start time
         start = datetime.now()
 
@@ -281,7 +275,6 @@ def main(process, game=None, method=None, autostart=None):
                     f"Unseen Rounded Similarity (Potential Shiny): Press enter to continue ..."
                 )
             else:  # Already in keys
-
                 # Get the average value in the similarities array
                 average = sum(similarities[rounded]) / len(similarities[rounded])
 
@@ -309,27 +302,9 @@ def main(process, game=None, method=None, autostart=None):
             # Control screenshot saved
             control = True
 
-        except Exception as e:
-
-            # Error msg string
-            errmsg = str(e)
-
-            # Window has crashed
-            if errmsg.startswith(
-                "Error code from Windows: 1400 - Invalid window handle."
-            ):
-
-                # Error Message
-                message = "Hatch failed: Window has crashed."
-
-                # Autostart Enabled
-                if autostart:
-                    write_log(f"{message} Restarting ...")
-                    process = window.start_window(autostart, game)
-                else:  # Cannot Restart
-                    raise Exception(message)
-            else:  # Generic error
-                write_log(f"Hatch failed: {e} Resetting ...")
+        except Exception as e:  # Failure
+            # Handle the exception depending on error
+            handle_exception(e, method, autostart)
 
         try:
             # Update hatch counter

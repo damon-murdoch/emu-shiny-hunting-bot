@@ -43,7 +43,6 @@ SEQUENCE_PRESS = 0.5
 
 
 def left_stick_and_release(gp, x, y, delay: int = SINGLE_PRESS):
-
     # Input the left joystick
     gp.left_joystick_float(x_value_float=x, y_value_float=y)
     gp.update()
@@ -58,7 +57,6 @@ def left_stick_and_release(gp, x, y, delay: int = SINGLE_PRESS):
 
 
 def press_and_release(gp, buttons, delay: int = SINGLE_PRESS):
-
     # Press button and update
     for button in buttons:
         gp.press_button(button=button)
@@ -80,7 +78,6 @@ def press_and_release_sequence(
     delay_sequence: int = SEQUENCE_PRESS,
     delay_buttons: int = SINGLE_PRESS,
 ):
-
     # Loop over the sequence elements
     for buttons in sequence:
         # Press and release the buttons, wait for delay
@@ -107,7 +104,6 @@ def save_game(gp, method, delay: int = SAVE_DELAY):
 
 
 def soft_reset(gp, method, delay: int = RESET_DELAY, offset: int = 0):
-
     # Soft reset the game
     press_and_release(
         gp,
@@ -142,18 +138,15 @@ def soft_reset(gp, method, delay: int = RESET_DELAY, offset: int = 0):
 
 
 def get_gamepad():
-
     # Create virtual gamepad
     gp = vg.VX360Gamepad()
 
     return gp
 
 
-def configure_citra(gp=None):
-
-    # Create new gamepad, if not provided
-    if gp == None:
-        gp = get_gamepad()
+def configure_citra(citra, game=None, autostart=None):
+    # Create new gamepad
+    gp = get_gamepad()
 
     print("Go to Emulation -> Configure -> Controls and click 'Auto Map' ...")
     print(

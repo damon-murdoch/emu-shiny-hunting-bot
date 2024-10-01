@@ -60,9 +60,14 @@ parser.add_argument(
     default=None,
     help="Auto-Start Script for starting / restarting the game window on startup or after a crash",
 )
+parser.add_argument(
+    "-w",
+    "--window",
+    default=None,
+    help="Custom window title for the emulator / capture window, e.g. 'Citra' -> 'Citra 5115f64 | ...'",
+)
 
 if __name__ == "__main__":
-
     try:
         print(f"Starting {TITLE} v{VERSION} ...")
 
@@ -74,11 +79,20 @@ if __name__ == "__main__":
 
         # Is Macro (Headless)
         if action.is_macro():
-
             # Run the script for the action
             result = action.run(arguments.game, arguments.method)
 
         else:  # Window required
+            # Custom window provided
+            if arguments.window:
+                print(f"Custom window filter provided: {arguments.window} ...")
+
+                # Set the custom window title
+                window.set_window_title(arguments.method, arguments.window)
+
+            print(
+                f"Searching for window title starting with '{window.get_window_title(arguments.method)}' ..."
+            )
 
             # Find the game window
             process = window.find_window(arguments.method)

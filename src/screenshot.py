@@ -4,17 +4,22 @@ import numpy as np
 from PIL import Image, ImageGrab
 from skimage.metrics import structural_similarity as ssim
 
+from src.system import get_dpi_scaling_factor as gdpi
+
 import os
 
 # Output Directory
 OUTDIR = "out"
 
 # Wait Limit
-LIMIT = 100
+# Increase as necessary, Groudon is ~160
+WAIT_LIMIT = 200
+
+# Allowed Colour Difference
+COLOUR_THRESHOLD = 16
 
 
 def crop_image(image, crop_w=0.8, crop_h=0.8):
-
     # Parse image width/height
     width, height = image.size
 
@@ -33,7 +38,6 @@ def crop_image(image, crop_w=0.8, crop_h=0.8):
 
 
 def load_image_data(image_path, debug=False):
-
     # Load image from path
     image = Image.open(image_path)
 
@@ -53,7 +57,6 @@ def load_image_data(image_path, debug=False):
 
 
 def compare_images(a, b, debug=False):
-
     # Generate full paths
     pa = os.path.join(OUTDIR, a)
     pb = os.path.join(OUTDIR, b)
@@ -69,14 +72,16 @@ def compare_images(a, b, debug=False):
 
 
 def take_screenshot(window):
+    # Window scaling factor
+    sf = gdpi()
 
     # Bounding Box
 
     bbox = [
-        window.left,  # Left
-        window.top,  # Top
-        window.left + window.width,  # Right
-        window.top + window.height,  # Bottom
+        window.left * sf,  # Left
+        window.top * sf,  # Top
+        (window.left + window.width) * sf,  # Right
+        (window.top + window.height) * sf,  # Bottom
     ]
 
     # Take a screenshot of the window and return it
@@ -84,7 +89,6 @@ def take_screenshot(window):
 
 
 def save_screenshot(window, name="screenshot.png", format="PNG"):
-
     # Take a screenshot of the window
     image = take_screenshot(window)
 
@@ -98,8 +102,9 @@ def save_screenshot(window, name="screenshot.png", format="PNG"):
     image.save(filename, format)
 
 
-def wait_for_change(window, x=None, y=None, delay=0.1, limit=100):
-
+def wait_for_change(
+    window, x=None, y=None, delay=0.1, limit=WAIT_LIMIT, threshold=COLOUR_THRESHOLD
+):
     # X Coordinate not provided
     if x == None:
         # Center Pixel
@@ -120,8 +125,7 @@ def wait_for_change(window, x=None, y=None, delay=0.1, limit=100):
     i = 0
 
     # Wait for change
-    while pixel == first:
-
+    while in_colour_threshold(pixel, first, threshold):
         # Limit exceeded
         if i > limit:
             raise Exception(f"Wait for change limit '{limit}' exceeded!")
@@ -137,8 +141,7 @@ def wait_for_change(window, x=None, y=None, delay=0.1, limit=100):
     return i
 
 
-def check_for_colour(window, x=None, y=None, r=0, g=0, b=0):
-
+def check_for_colour(window, x=None, y=None, r=0, g=0, b=0, threshold=COLOUR_THRESHOLD):
     # X Coordinate not provided
     if x == None:
         # Center Pixel
@@ -159,11 +162,40 @@ def check_for_colour(window, x=None, y=None, r=0, g=0, b=0):
     pixel = screenshot.getpixel(point)
 
     # True/False if matches
-    return pixel == target
+    return in_colour_threshold(pixel, target, threshold)
 
 
-def wait_for_colour(window, x=None, y=None, r=0, g=0, b=0, delay=0.1, limit=100):
+# New helper function to check if the color is within a given threshold
+def in_colour_threshold(pixel, target, threshold=16):
+    if None in pixel:
+        return False
+    if None in target:
+        raise Exception("'None' in target pixel!")
 
+    # Dereference RGB values
+    r1, g1, b1 = pixel
+    r2, g2, b2 = target
+
+    # Calculate differences
+    dr = abs(r1 - r2)
+    dg = abs(g1 - g2)
+    db = abs(b1 - b2)
+
+    # Total difference is less than 'threshold'
+    return (dr + dg + db) < threshold
+
+
+def wait_for_colour(
+    window,
+    x=None,
+    y=None,
+    r=0,
+    g=0,
+    b=0,
+    delay=0.1,
+    limit=WAIT_LIMIT,
+    threshold=COLOUR_THRESHOLD,
+):
     # X Coordinate not provided
     if x == None:
         # Center Pixel
@@ -186,8 +218,7 @@ def wait_for_colour(window, x=None, y=None, r=0, g=0, b=0, delay=0.1, limit=100)
     i = 0
 
     # While the correct colour has not been found
-    while pixel != target:
-
+    while not in_colour_threshold(pixel, target, threshold):
         # Limit exceeded
         if i > limit:
             raise Exception(f"Wait for colour limit '{limit}' exceeded!")

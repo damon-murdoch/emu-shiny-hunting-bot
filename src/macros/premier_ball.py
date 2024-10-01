@@ -24,7 +24,6 @@ def buy_premier_ball(gp, method):
 
 
 def main(game, method):
-
     # Create the log file (or clear it)
     with open(LOG_FILE, "w"):
         write_log(f"Starting Premier Ball Macro ...")

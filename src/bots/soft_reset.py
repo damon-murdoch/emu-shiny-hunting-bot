@@ -8,6 +8,8 @@ import src.window as window
 from src.gamepad import JOYSTICK_COORDINATES as joystick
 from src.log import write_log, LOG_FILE
 
+from src.common import handle_exception
+
 # ~1.1s delay for shinies
 SHINY_DELAY = 1.1
 
@@ -16,7 +18,6 @@ ENCOUNTERS_FILE = "encounters.txt"
 
 
 def soft_reset_loop(gp, process):
-
     # Move control stick forward (For ultra space encounters, etc.)
     gamepad.left_stick_and_release(gp, joystick["neutral"], joystick["up"], 1)
 
@@ -40,7 +41,6 @@ def soft_reset_loop(gp, process):
 
 
 def main(process, game=None, method=None, autostart=None):
-
     # Reset times
     fastest = None
     encounters = 0
@@ -65,7 +65,6 @@ def main(process, game=None, method=None, autostart=None):
 
     # Start loop
     while True:
-
         # Encounter start time
         start = datetime.now()
 
@@ -106,27 +105,8 @@ def main(process, game=None, method=None, autostart=None):
                 return encounters
 
         except Exception as e:  # Failure
-
-            # Error msg string
-            errmsg = str(e)
-
-            # Window has crashed
-            if errmsg.startswith(
-                "Error code from Windows: 1400 - Invalid window handle."
-            ):
-
-                # Error Message
-                message = "Encounter failed: Window has crashed."
-
-                # Autostart Enabled
-                if autostart:
-                    write_log(f"{message} Restarting ...")
-                    process = window.start_window(autostart, game)
-                else:  # Cannot Restart
-                    raise Exception(message)
-            else:  # Generic error
-                write_log(f"Encounter failed: {e} Resetting ...")
-
+            # Handle the exception depending on error
+            handle_exception(e, method, autostart)
         try:
             # Parse the number of encounters from the file
             with open(ENCOUNTERS_FILE, "w") as file:

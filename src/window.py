@@ -10,6 +10,14 @@ WINDOW_TITLE = {"emulator": "Citra", "remote": "Snickerstream - "}
 STARTUP_DELAY = 5
 
 
+def get_window_title(method):
+    return WINDOW_TITLE[method]
+
+
+def set_window_title(method, title):
+    WINDOW_TITLE[method] = title
+
+
 def find_window(method):
     windows = pgw.getAllWindows()
     for window in windows:
@@ -20,7 +28,6 @@ def find_window(method):
 
 
 def start_window(script, method, delay=STARTUP_DELAY):
-
     # Run the autostart script
     subprocess(script, shell=True)
 

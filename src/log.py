@@ -4,7 +4,6 @@ LOG_FILE = "events.log"
 
 
 def get_timestamp(time=None):
-
     # Use current time, if not provided
     if time == None:
         time = datetime.now()
@@ -14,7 +13,6 @@ def get_timestamp(time=None):
 
 
 def write_log(message, time=None):
-
     # Get the timestamp
     ts = get_timestamp(time)
 
