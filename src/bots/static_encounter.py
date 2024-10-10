@@ -78,7 +78,10 @@ def main(process, game=None, method=None, autostart=None):
             offset = random.uniform(0.0, 4.0)
 
             # Reset game (With random delay)
-            gamepad.soft_reset(gp, method, offset=offset)
+            gamepad.soft_reset(gp, offset=offset)
+
+            # Load the menu for the game
+            gamepad.load_game(gp, game)
 
             # Perform input loop
             seconds = soft_reset_loop(gp, process)

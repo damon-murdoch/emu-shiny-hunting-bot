@@ -5,12 +5,14 @@ import src.gamepad as gamepad
 import src.window as window
 
 # Macros
+from src.macros.soft_reset import main as srm
 from src.macros.premier_ball import main as pbm
+from src.macros.egg_hatching import main as ehm
 from src.macros.quick_release import main as qrm
 
 # Bots
-from src.bots.egg_hatch import main as ehb
-from src.bots.soft_reset import main as srb
+from src.bots.egg_hatching import main as ehb
+from src.bots.static_encounter import main as seb
 
 from src.classes import Macro, Bot
 
@@ -29,11 +31,13 @@ ACTIONS = {
     # Setup
     "setup": Macro(gamepad.configure_citra),
     # Macros
+    "soft-reset": Macro(srm),
+    "egg-hatching": Macro(ehm),
     "premier-ball": Macro(pbm),
     "quick-release": Macro(qrm),
     # Bots
-    "soft-reset-bot": Bot(srb),
     "egg-hatching-bot": Bot(ehb),
+    "static-encounter-bot": Bot(seb),
 }
 
 parser = argparse.ArgumentParser("n3ds.py", description=TITLE)

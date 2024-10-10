@@ -1,6 +1,19 @@
+import time
 import src.window as window
 
 from src.log import write_log
+
+# Execution Time Wrapper
+def get_execution_time(fn):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()  # Record the start time
+        write_log(f"Starting {fn.__name__} ...")
+        result = fn(*args, **kwargs)  # Call the wrapped function
+        end_time = time.time()  # Record the end time
+        elapsed_time = end_time - start_time  # Calculate the elapsed time
+        write_log(f"Execution time for {fn.__name__}: {elapsed_time:.6f}s")
+        return result  # Return the result of the function
+    return wrapper
 
 
 def handle_exception(e, method, autostart=None):

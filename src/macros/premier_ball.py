@@ -1,5 +1,5 @@
 import src.gamepad as gamepad
-from src.gamepad import ABXY_MAP as abxy
+from src.gamepad import ABXY_MAP as abxy_map
 from vgamepad import XUSB_BUTTON as button
 
 from src.log import write_log, LOG_FILE
@@ -9,17 +9,16 @@ def buy_premier_ball(gp, method):
     gamepad.press_and_release_sequence(
         gp,
         [
-            [abxy[method]["a"]],  # Select PokeBall
+            [abxy_map["a"]],  # Select PokeBall
             [button.XUSB_GAMEPAD_DPAD_RIGHT],  # Increase count by 10
             [button.XUSB_GAMEPAD_DPAD_DOWN],  # Decrease count by 1
-            [abxy[method]["a"]],  # Select ball count
-            [abxy[method]["a"]],  # Confirm ball count
+            [abxy_map["a"]],  # Select ball count
+            [abxy_map["a"]],  # Confirm ball count
             # Dialog Boxes
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-        ],
-        1,
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+        ]
     )
 
 

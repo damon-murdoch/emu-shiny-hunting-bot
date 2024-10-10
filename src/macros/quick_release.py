@@ -1,7 +1,7 @@
 import time
 import src.gamepad as gamepad
 
-from src.gamepad import ABXY_MAP as abxy
+from src.gamepad import ABXY_MAP as abxy_map
 from vgamepad import XUSB_BUTTON as button
 from src.log import write_log, LOG_FILE
 
@@ -11,16 +11,15 @@ def release_mon(gp, method):
     gamepad.press_and_release_sequence(
         gp,
         [
-            [abxy[method]["a"]],
+            [abxy_map["a"]],
             [button.XUSB_GAMEPAD_DPAD_UP],
             [button.XUSB_GAMEPAD_DPAD_UP],
-            [abxy[method]["a"]],
+            [abxy_map["a"]],
             [button.XUSB_GAMEPAD_DPAD_UP],
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-        ],
-        1,
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+        ]
     )
 
 

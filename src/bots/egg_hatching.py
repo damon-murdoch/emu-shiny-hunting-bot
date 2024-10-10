@@ -8,7 +8,7 @@ import src.window as window
 from vgamepad import XUSB_BUTTON as button
 
 from src.gamepad import JOYSTICK_COORDINATES as joystick
-from src.gamepad import ABXY_MAP as abxy
+from src.gamepad import ABXY_MAP as abxy_map
 from src.log import write_log, LOG_FILE
 
 from src.common import handle_exception
@@ -24,7 +24,7 @@ HATCHED_SS = "hatched.png"
 
 
 def sprint_and_spin(gp, method):
-    gp.press_button(button=abxy[method]["b"])  # Hold Sprint
+    gp.press_button(button=abxy_map["b"])  # Hold Sprint
     gamepad.left_stick_and_release(gp, joystick["neutral"], joystick["up"], 0.5)
     gamepad.left_stick_and_release(gp, joystick["right"], joystick["up"], 0.5)
     gamepad.left_stick_and_release(gp, joystick["right"], joystick["neutral"], 0.5)
@@ -33,7 +33,7 @@ def sprint_and_spin(gp, method):
     gamepad.left_stick_and_release(gp, joystick["left"], joystick["down"], 0.5)
     gamepad.left_stick_and_release(gp, joystick["left"], joystick["neutral"], 0.5)
     gamepad.left_stick_and_release(gp, joystick["left"], joystick["up"], 0.5)
-    gp.release_button(button=abxy[method]["b"])  # Release Sprint
+    gp.release_button(button=abxy_map["b"])  # Release Sprint
 
 
 def usum_loop(gp, process, method, control=False, max_spins=20):
@@ -45,12 +45,12 @@ def usum_loop(gp, process, method, control=False, max_spins=20):
 
     # Day Care Lady Menu
     for i in range(10):
-        gamepad.press_and_release(gp, [abxy[method]["a"]], 1)
+        gamepad.press_and_release(gp, [abxy_map["a"]], 1)
         time.sleep(1)
 
     # Menu Escape Fallback
     for i in range(2):
-        gamepad.press_and_release(gp, [abxy[method]["b"]], 1)
+        gamepad.press_and_release(gp, [abxy_map["b"]], 1)
         time.sleep(1)
 
     # Walk to Closed Spot
@@ -71,7 +71,7 @@ def usum_loop(gp, process, method, control=False, max_spins=20):
             sprint_and_spin(gp)
 
         # Check for egg
-        gamepad.press_and_release(gp, [abxy[method]["a"]])
+        gamepad.press_and_release(gp, [abxy_map["a"]])
 
         # Increase spin counter
         spin_counter += 1
@@ -114,7 +114,7 @@ def oras_loop(gp, process, method, control=False, max_loops=16):
     gamepad.press_and_release_sequence(
         gp,
         [
-            [abxy[method]["y"]],  # Open Quick Menu
+            [abxy_map["y"]],  # Open Quick Menu
             [button.XUSB_GAMEPAD_DPAD_RIGHT],  # Select Mach Bike
         ],
     )
@@ -126,13 +126,13 @@ def oras_loop(gp, process, method, control=False, max_loops=16):
     gamepad.press_and_release_sequence(
         gp,
         [
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
-            [abxy[method]["a"]],
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+            [abxy_map["a"]],
+            [abxy_map["a"]],
         ],
     )
 
@@ -143,9 +143,9 @@ def oras_loop(gp, process, method, control=False, max_loops=16):
     gamepad.press_and_release_sequence(
         gp,
         [
-            [abxy[method]["b"]],
-            [abxy[method]["b"]],
-            [abxy[method]["b"]],
+            [abxy_map["b"]],
+            [abxy_map["b"]],
+            [abxy_map["b"]],
         ],
     )
 
@@ -168,7 +168,7 @@ def oras_loop(gp, process, method, control=False, max_loops=16):
         gamepad.press_and_release(gp, [button.XUSB_GAMEPAD_DPAD_UP], 0.1)
 
         # Check for egg
-        gamepad.press_and_release(gp, [abxy[method]["a"]])
+        gamepad.press_and_release(gp, [abxy_map["a"]])
 
         # Wait 2 seconds
         time.sleep(2)
@@ -254,7 +254,10 @@ def main(process, game=None, method=None, autostart=None):
             offset = random.uniform(0.0, 4.0)
 
             # Reset game (With random delay)
-            gamepad.soft_reset(gp, method, offset=offset)
+            gamepad.soft_reset(gp, offset=offset)
+
+            # Load the menu for the game
+            gamepad.load_game(gp, game)
 
             # Run the loop for the game, control var
             similarity = loops[game](gp, process, method, control)

@@ -2,19 +2,12 @@ import time
 import vgamepad as vg
 from vgamepad import XUSB_BUTTON as button
 
+# Inverted ABXY
 ABXY_MAP = {
-    "emulator": {
-        "a": button.XUSB_GAMEPAD_B,
-        "b": button.XUSB_GAMEPAD_A,
-        "x": button.XUSB_GAMEPAD_Y,
-        "y": button.XUSB_GAMEPAD_X,
-    },
-    "remote": {
-        "a": button.XUSB_GAMEPAD_A,
-        "b": button.XUSB_GAMEPAD_B,
-        "x": button.XUSB_GAMEPAD_X,
-        "y": button.XUSB_GAMEPAD_Y,
-    },
+    "a": button.XUSB_GAMEPAD_B,
+    "b": button.XUSB_GAMEPAD_A,
+    "x": button.XUSB_GAMEPAD_Y,
+    "y": button.XUSB_GAMEPAD_X,
 }
 
 # Joystick Coordinates
@@ -35,11 +28,14 @@ INPUT_DELAY = 4
 # ~8s between resets
 RESET_DELAY = 6
 
+# Wait to connect
+GAMEPAD_DELAY = 10
+
 # Single Button Press
 SINGLE_PRESS = 0.1
 
 # Sequence Button Press
-SEQUENCE_PRESS = 0.5
+SEQUENCE_PRESS = 1.2
 
 
 def left_stick_and_release(gp, x, y, delay: int = SINGLE_PRESS):
@@ -86,24 +82,40 @@ def press_and_release_sequence(
             time.sleep(delay_sequence)
 
 
-"""
-def save_game(gp, method, delay: int = SAVE_DELAY):
+def home_menu(gp):
 
-    press_and_release_sequence(
+    # Requires ReHID + included rehid.json file
+
+    # Open the Home Menu (ReHID Remap)
+    press_and_release(
         gp,
         [
-            [ABXY_MAP[method]["x"]],  # Open Menu
-            [ABXY_MAP[method]["y"]],  # Save Menu
-            [ABXY_MAP[method]["a"]],  # Confirm
-            [ABXY_MAP[method]["a"]],  # Confirm
-            [ABXY_MAP[method]["b"]],  # Exit
+            ABXY_MAP["a"],
+            button.XUSB_GAMEPAD_DPAD_LEFT,
+            button.XUSB_GAMEPAD_LEFT_SHOULDER,
+            button.XUSB_GAMEPAD_RIGHT_SHOULDER,
         ],
-        delay,
+        SINGLE_PRESS,
     )
-"""
+
+def load_game(gp, game, delay: int = INPUT_DELAY):
+
+    # Load Menu Sequence
+    sequence = [
+        [ABXY_MAP["a"]],  # Intro Cutscene
+        [ABXY_MAP["a"]],  # Load Save
+    ]
+
+    # Extra button press
+    if game == 'oras':
+        # Extra menu input for start screen
+        sequence.append([ABXY_MAP["a"]])
+
+    # Load the game
+    press_and_release_sequence(gp,sequence,delay)
 
 
-def soft_reset(gp, method, delay: int = RESET_DELAY, offset: int = 0):
+def soft_reset(gp, delay: int = RESET_DELAY, offset: int = 0):
     # Soft reset the game
     press_and_release(
         gp,
@@ -123,24 +135,22 @@ def soft_reset(gp, method, delay: int = RESET_DELAY, offset: int = 0):
     if reset_delay:
         time.sleep(reset_delay)
 
-    # Note: Controller 'B' press maps to 'A' ingame
 
-    press_and_release_sequence(
-        gp,
-        [
-            [ABXY_MAP[method]["a"]],  # Intro Cutscene
-            [ABXY_MAP[method]["a"]],  # Load Save
-            [ABXY_MAP[method]["a"]],  # Sanity Check
-            [ABXY_MAP[method]["a"]],  # Sanity Check
-        ],
-        INPUT_DELAY,
-    )
+def get_gamepad(delay=GAMEPAD_DELAY):
 
+    print("Starting virtual controller service ... ")
 
-def get_gamepad():
     # Create virtual gamepad
     gp = vg.VX360Gamepad()
 
+    print("Waiting for the controller to connect ... ")
+
+    # Wait to connect
+    time.sleep(delay)
+
+    print("Done.")
+
+    # Return gamepad
     return gp
 
 
